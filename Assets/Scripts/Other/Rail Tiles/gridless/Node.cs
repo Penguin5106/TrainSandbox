@@ -10,5 +10,6 @@ public class Node <T>
     public Node(T data)
     {
         this.data = data;
+        links = new Dictionary<int, Node<T>>();
     }
 }

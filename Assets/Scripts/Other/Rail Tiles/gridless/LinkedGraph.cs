@@ -35,7 +35,7 @@ public class LinkedGraph<T>
 
         while (i < count)
         {
-
+            i++;
             foreach(Node<T> node in tocheck.links.Values)
             {
                 if (tocheck.links.ContainsValue(toFind))
@@ -124,21 +124,27 @@ public class LinkedGraph<T>
             return;
         }
 
-        if (addNode(node, link))
-        {
-            root = node;
-        }
+        if (!containsNode(link))
+            return;
+
+        addNode(node, link);
+        
+        root = node;
+        
     }
 
     public Dictionary<int, LinkedGraph<T>>  deleteNode(Node<T> node)
     {
-        if (node == null || !containsNode(node)) return null;
+
+        Dictionary<int, LinkedGraph<T>> LooseGraphs = new Dictionary<int, LinkedGraph<T>>();
+
+        if (node == null || !containsNode(node)) return LooseGraphs;
 
         if (node.links.Count == 0 && node == root)
         { 
             root = null;
             count = 0;
-            return null;
+            return LooseGraphs;
         }
 
         if (node.links.Count == 1 && node == root)
@@ -149,7 +155,7 @@ public class LinkedGraph<T>
                 { 
                     root = link;
                     count--;
-                    return null;
+                    return LooseGraphs;
                 }
             }
         }
@@ -167,10 +173,9 @@ public class LinkedGraph<T>
                 }
             }
             count--;
-            return null;
+            return LooseGraphs;
         }
 
-        Dictionary<int, LinkedGraph<T>> LooseGraphs = new Dictionary<int, LinkedGraph<T>>();
 
         if (node.links.Count > 1 &&  node == root)
         {
@@ -181,7 +186,11 @@ public class LinkedGraph<T>
                 foreach (KeyValuePair<int, Node<T>> linkPair in link.links)
                 {
                     if (linkPair.Value == node)
+                    {
                         link.links.Remove(linkPair.Key);
+                        break;
+                    }
+                    
                 }
             }
 
@@ -272,7 +281,20 @@ public class LinkedGraph<T>
             return LooseGraphs;
         }
 
-        return null;
+        return LooseGraphs;
+    }
+    
+    public bool linkNodes(Node<T> link, Node<T> link2)
+    {
+        if (link == null || link2 == null || !containsNode(link) || !containsNode(link2)) 
+        {
+            return false;
+        }
+
+        link2.links.Add(link2.links.Count, link);
+        link.links.Add(link.links.Count, link2);
+
+        return true;
     }
 }
 
