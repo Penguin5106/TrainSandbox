@@ -8,7 +8,7 @@ public class Train
     public int xPos;
     public int yPos;
 
-    private List<Station> timetable;
+    private List<Station> timetable { get; set; }
 
     private List<int[]> path;
 
@@ -20,11 +20,19 @@ public class Train
         this.yPos = yPos;
     }
 
-    public move()
+    public void move()
     {
         pathPosition++;
 
         xPos = path[pathPosition][0];
         yPos = path[pathPosition][1];
+    }
+
+    public void pathfind(Rail[][] railGrid, int[] start, int[] goal)
+    {
+        List<int[]> shortestPath = new List<int[]>();
+        
+        
+        
     }
 }
