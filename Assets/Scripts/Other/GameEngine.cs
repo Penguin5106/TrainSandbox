@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class GameEngine
 {
+    private static GameEngine instance; 
+    
     [SerializeField] private const int GridWidth = 10;
     [SerializeField] private const int GridHeight = 10;
     
@@ -14,7 +16,7 @@ public class GameEngine
     [SerializeField] GameObject trainPrefab;
     [SerializeField] GameObject TilePrefab;
 
-    public GameEngine()
+    private GameEngine()
     {
         Trains = new List<Train>();
         railGrid = new Tile[GridHeight, GridWidth];
@@ -27,6 +29,11 @@ public class GameEngine
             }
         }
 
+    }
+
+    public static GameEngine GetInstance()
+    {
+        return instance ??= new GameEngine();
     }
 
     public void AddTrain(int[] position)
@@ -48,4 +55,6 @@ public class GameEngine
     {
 
     }
+
+
 }
