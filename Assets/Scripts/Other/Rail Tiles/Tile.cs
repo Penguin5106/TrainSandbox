@@ -8,6 +8,8 @@ public enum Directions
 public class Tile
 {
     public bool[] connections;
+    
+    public Vector2 gridPosition;
 
     public Tile()
     {

@@ -38,23 +38,42 @@ public class GameEngine
 
     public void AddTrain(int[] position)
     {
-        Trains.Add(new Train(position[0], position[1]));
+        
     }
 
     public void DeleteTrain(Train train)
     {
-        Trains.Remove(train);
+        
     }
 
-    public void addRail(int[] position, Directions[] connections)
+    public void DisplayTrainTimetable(Train train)
     {
-        railGrid[position[0], position[1]] = new Rail(connections);
+        
     }
 
-    public void setRailAttributes(int[] position, bool occupied, Directions[] connections)
+    public void SetTrainTimetable(Train train)
+    {
+        
+    }
+
+    public void AddRail(int[] position, Directions[] connections)
+    {
+        
+    }
+
+    public void SetRailAttributes(Rail rail, int[] position, bool occupied, Directions[] connections)
     {
 
     }
 
+    public void DeleteRail(Rail rail)
+    {
+        
+    }
 
+    private void SimulateOneTurn()
+    {
+        
+    }
+    
 }
