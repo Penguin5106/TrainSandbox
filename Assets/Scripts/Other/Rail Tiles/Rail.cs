@@ -5,35 +5,48 @@ public class Rail : Tile
 
     public bool isOccupied;
 
+    [SerializeField] private GameObject[] spriteRenderers;
+
     public Rail(Directions[] connections)
     {
         isOccupied = false;
 
-        this.connections = new bool[8];
-
-        for (int i = 0; i < this.connections.Length; i++)
-        {
-            this.connections[i] = false;
-        }
-
-        for (int i = 0; i< connections.Length; i++)
-        {
-            this.connections[(int)connections[i]] = true;
-        }
+        setConnections(connections);
     }
 
     public void setConnections(Directions[] connections)
     {
         this.connections = new bool[8];
 
-        for (int i = 0; i < this.connections.Length; i++)
+        for (var i = 0; i < this.connections.Length; i++)
         {
             this.connections[i] = false;
         }
 
-        for (int i = 0; i< connections.Length; i++)
+        foreach (var sprite in spriteRenderers)
         {
-            this.connections[(int)connections[i]] = true;
+            sprite.SetActive(false);
+        }
+        
+        foreach (var t in connections)
+        {
+            this.connections[(int)t] = true;
+            
+            spriteRenderers[(int)t].SetActive(true);
+        }
+        
+    }
+
+    public void setConnections(bool[] connections)
+    {
+        if (connections.Length == 8)
+        {
+            this.connections = connections;
+        }
+        
+        for (int i = 0; i < 8; i++)
+        {
+            spriteRenderers[i].SetActive(connections[i]);
         }
     }
 }

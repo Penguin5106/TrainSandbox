@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e6fedc2472449cead18ef23b5cb30d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.2D.Animation.Runtime::UnityEngine.U2D.Animation.SpriteLibrarySourceAsset
+  m_Library:
+  - m_Name: Rail Segments
+    m_Hash: 226249769
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: 0
+      m_Hash: 886824737
+      m_Sprite: {fileID: -8421644517762452614, guid: 947089e615a4bec42a4c49377c4f8fc0, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -8421644517762452614, guid: 947089e615a4bec42a4c49377c4f8fc0, type: 3}
+    - m_Name: 1
+      m_Hash: 64810935
+      m_Sprite: {fileID: 973036101628499993, guid: 19e918b97f56ae140b35aebeef15a440, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 973036101628499993, guid: 19e918b97f56ae140b35aebeef15a440, type: 3}
+    - m_Name: 2
+      m_Hash: 450215437
+      m_Sprite: {fileID: -7397011899515436860, guid: 4166895977da39c41ba5edcb6cd3c36d, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -7397011899515436860, guid: 4166895977da39c41ba5edcb6cd3c36d, type: 3}
+    - m_Name: 3
+      m_Hash: 768773787
+      m_Sprite: {fileID: -5855543585329481869, guid: 00e028bd8aeafc64d876c846a0769b50, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -5855543585329481869, guid: 00e028bd8aeafc64d876c846a0769b50, type: 3}
+    - m_Name: 4
+      m_Hash: 867572536
+      m_Sprite: {fileID: 3425174482169513023, guid: ec3b3830a3f368646847e7c4d1ba454d, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 3425174482169513023, guid: ec3b3830a3f368646847e7c4d1ba454d, type: 3}
+    - m_Name: 5
+      m_Hash: 78719918
+      m_Sprite: {fileID: 199883025780939831, guid: 21bf30f45091d0143b39455ab08e834c, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 199883025780939831, guid: 21bf30f45091d0143b39455ab08e834c, type: 3}
+    - m_Name: 6
+      m_Hash: 498629140
+      m_Sprite: {fileID: 3708732920319098279, guid: 3e2e4897b9cac2d4bb894757499521f3, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 3708732920319098279, guid: 3e2e4897b9cac2d4bb894757499521f3, type: 3}
+    - m_Name: 7
+      m_Hash: 717179522
+      m_Sprite: {fileID: 7648153938116591030, guid: 6b65734d5d9a98f42ac329f67aad1ce2, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 7648153938116591030, guid: 6b65734d5d9a98f42ac329f67aad1ce2, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 8
+  m_PrimaryLibraryGUID: 
+  m_ModificationHash: 639002882795234678
+  m_Version: 1

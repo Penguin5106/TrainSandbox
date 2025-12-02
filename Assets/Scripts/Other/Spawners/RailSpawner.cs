@@ -6,8 +6,6 @@ public class RailSpawner : TileSpawner
     {
         GameObject Rail = base.Spawn(Caller);
 
-
-
         return Rail;
     }
 }

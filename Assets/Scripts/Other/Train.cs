@@ -4,15 +4,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Train
+public class Train : MonoBehaviour
 {
     Vector2Int position;
 
     private List<Station> timetable { get; set; }
 
-    private List<Vector2Int> TemporaryPath;
+    private List<Vector2Int> temporaryPath;
     private List<Vector2Int> path;
 
+    private int temporaryPathPosition;
     private int pathPosition;
 
     public Train(int xPos, int yPos)
@@ -20,11 +21,44 @@ public class Train
         position = new Vector2Int(xPos, yPos);
     }
 
+    public Train()
+    {
+        position = new Vector2Int(0, 0);
+    }
+
+    public List<Station> GetTimetable()
+    {
+        return timetable;
+    }
+
+    public void setPosition(int xPos, int yPos)
+    {
+        position =  new Vector2Int(xPos, yPos);
+        gameObject.transform.position = new  Vector3(position.x, position.y, 0);
+    }
+    
+    public void setPosition(Vector2Int newPos)
+    {
+        position =  newPos;
+        gameObject.transform.position = new  Vector3(position.x, position.y, 0);
+    }
+
     public void move()
     {
-        pathPosition++;
+        if (temporaryPath.Count <= 0)
+        {
+            if (path.Count <= 0)
+            {
+                return;
+            }
+            pathPosition++;
 
-        position =  new Vector2Int(path[pathPosition].x, path[pathPosition].y);
+            setPosition(path[pathPosition]);
+            return;
+        }
+        temporaryPathPosition++;
+
+        setPosition(temporaryPath[temporaryPathPosition]);
     }
 
     double optimisedMagnitude(Vector2 vec)
@@ -435,7 +469,7 @@ public class Train
         return shortestPath;
     }
 
-    private void generatePath()
+    private bool generatePath()
     {
         Tile[,] grid = GameEngine.GetInstance().railGrid;
 
@@ -451,22 +485,28 @@ public class Train
 
             if (iteration == 0)
             {
-                TemporaryPath = pathfind(grid, pathfindStart, pathfindGoal);
+                temporaryPath = pathfind(grid, pathfindStart, pathfindGoal);
             }
             else
             {
-                path.Concat(pathfind(grid, pathfindStart, pathfindGoal));
+                path.Concat(pathfind(grid, pathfindStart, pathfindGoal) ?? new List<Vector2Int>());
+
+                if (path.Count == 0)
+                {
+                    return false;
+                }
             }
             
             iteration++;
             pathfindStart = pathfindGoal;
         }
+        return true;
     }
 
-    public void SetNewTimetable(List<Station> stations)
+    public bool SetNewTimetable(List<Station> stations)
     {
         timetable = stations;
         
-        generatePath();
+        return generatePath();
     }
 }
