@@ -9,6 +9,8 @@ public class GameEngine : MonoBehaviour
     [SerializeField] private const int GridHeight = 10;
     private const float TileOffset = 0.5f;
     
+    public IClickable SelectedObject { get; set; }
+    
     
     public Tile[,] railGrid;
     private GameObject[,] tileObjectGrid;

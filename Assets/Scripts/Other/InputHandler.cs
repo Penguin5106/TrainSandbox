@@ -4,18 +4,7 @@ using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
 {
-    
-    private Vector2 mousePosition;
-    
-    private void Update()
-    {
-        
-    }
-
-    public void onPoint(InputAction.CallbackContext context)
-    {
-        
-    }
+    [SerializeField] private Camera playerCamera;
     
     public void OnClick(InputAction.CallbackContext context)
     {
@@ -23,9 +12,22 @@ public class InputHandler : MonoBehaviour
         {
             return;
         }
+
+        Vector2 mousePos = playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        Debug.Log("click at " + mousePos);
         
-        
-        Debug.Log("click at " + mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+
+        if (hit)
+        {
+            Debug.Log("hit object" + hit.collider.name);
+            
+            IClickable clickable = hit.collider.GetComponent<IClickable>();
+            
+            clickable?.Click();
+            
+            GameEngine.GetInstance().SelectedObject = clickable;
+        }
         
     }
 }
