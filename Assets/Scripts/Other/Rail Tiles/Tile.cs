@@ -8,7 +8,7 @@ public enum Directions
 
 public class Tile : MonoBehaviour , IClickable
 {
-    protected internal bool[] connections { get; protected set; }
+    protected internal bool[] connections;
     
     public Vector2Int gridPosition;
 
@@ -22,8 +22,13 @@ public class Tile : MonoBehaviour , IClickable
         }
     }
 
+    public bool[] getConnections()
+    {
+        return connections;
+    }
+    
     public void Click()
     {
-        Debug.Log("tile clicked");
+        UIManager.GetInstance().SetUIPanelActive(UIPanel.Tile);
     }
 }

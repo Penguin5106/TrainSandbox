@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class InputHandler : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
+    private IClickable clickable;
     
     public void OnClick(InputAction.CallbackContext context)
     {
@@ -21,13 +22,48 @@ public class InputHandler : MonoBehaviour
         if (hit)
         {
             Debug.Log("hit object" + hit.collider.name);
-            
-            IClickable clickable = hit.collider.GetComponent<IClickable>();
+            clickable ??= hit.collider.GetComponent<IClickable>();
             
             clickable?.Click();
-            
-            GameEngine.GetInstance().SelectedObject = clickable;
+            return;
         }
         
+        UIManager.GetInstance().SetUIPanelActive(UIPanel.None);
+        
+    }
+
+    public void ToggleRailConnection(int direction)
+    {
+        Debug.Log("Toggle Rail Connection");
+        if (clickable is Rail rail)
+        {
+            bool[] newConnections = rail.getConnections();
+            
+            newConnections[direction] = !newConnections[direction];
+
+            if (newConnections == new bool[] { false, false, false, false, false, false, false, false })
+            {
+                GameEngine.GetInstance().DeleteRail(rail);
+                return;
+            }
+            
+            rail.setConnections(newConnections);
+            return;
+        }
+
+        if (clickable is Tile tile)
+        {
+            Debug.Log(direction);
+            GameEngine.GetInstance().TileToRail(tile, new Directions[]{(Directions)direction});
+        }
+        
+    }
+
+    public void SetStationName(string stationName)
+    {
+        if (clickable is Station station)
+        {
+            station.name = stationName;
+        }
     }
 }

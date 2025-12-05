@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Train : MonoBehaviour
+public class Train : MonoBehaviour , IClickable
 {
     Vector2Int position;
 
@@ -508,5 +508,10 @@ public class Train : MonoBehaviour
         timetable = stations;
         
         return generatePath();
+    }
+
+    public void Click()
+    {
+        UIManager.GetInstance().SetUIPanelActive(UIPanel.Train);
     }
 }

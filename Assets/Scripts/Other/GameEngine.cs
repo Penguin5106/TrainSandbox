@@ -9,11 +9,7 @@ public class GameEngine : MonoBehaviour
     [SerializeField] private const int GridHeight = 10;
     private const float TileOffset = 0.5f;
     
-    public IClickable SelectedObject { get; set; }
-    
-    
     public Tile[,] railGrid;
-    private GameObject[,] tileObjectGrid;
     private List<GameObject> Trains;
     
     //[SerializeField] private GameObject railPrefab;
@@ -22,92 +18,38 @@ public class GameEngine : MonoBehaviour
 
     [SerializeField] private List<Spawner> spawners;
 
-    private GameEngine()
-    {
-        Trains = new List<GameObject>();
-        railGrid = new Tile[GridHeight, GridWidth];
-        tileObjectGrid = new GameObject[GridHeight, GridWidth];
-
-        for (int i = 0 ; i < GridHeight; i++)
-        {
-            for (int j = 0; i < GridWidth; i++)
-            {
-                railGrid[i,j] = new Tile();
-            }
-        }
-        
-    }
+    
 
     private void Start()
     {
-        GenerateGrid();
+        instance = this;
+        
+        Trains = new List<GameObject>();
+        railGrid = new Tile[GridHeight, GridWidth];
+
+        foreach (Spawner spawner in spawners)
+        {
+            if (spawner is RailSpawner) continue;
+            
+            if (spawner is TileSpawner)
+            {
+                var tileSpawner = spawner as TileSpawner;
+
+                for (int i = 0; i < GridHeight; i++)
+                {
+                    for (int j = 0; j < GridWidth; j++)
+                    {
+                        railGrid[i, j] = tileSpawner?.Spawn(gameObject).GetComponent<Tile>();
+                        railGrid[i, j].transform.position = (new Vector3(j * TileOffset, i * TileOffset, 0));
+                    }
+                }
+            }
+        }
     }
 
     public static GameEngine GetInstance()
     {
-        return instance ??= new GameEngine();
-    }
-
-    private void GenerateGrid()
-    {
-        TileSpawner tileSpawner = null;
-        RailSpawner railSpawner = null;
-        StationSpawner stationSpawner = null;
-
-        foreach (ISpawner spawner in spawners)
-        {
-            if (spawner is TileSpawner)
-            {
-                tileSpawner = (TileSpawner)spawner;
-            }
-
-            if (spawner is RailSpawner)
-            {
-                railSpawner = (RailSpawner)spawner;
-            }
-
-            if (spawner is StationSpawner)
-            {
-                stationSpawner = (StationSpawner)spawner;
-            }
-
-        }
-
-        if (tileSpawner != null)
-        {
-            for (int i = 0; i < railGrid.GetLength(0); i++)
-            {
-                for (int j = 0; j < railGrid.GetLength(1); j++)
-                {
-                    if (railGrid[i, j] is Station)
-                    {
-                        GameObject station = stationSpawner.Spawn(gameObject);
-
-                        tileObjectGrid[i, j] = station;
-                        
-                        station.transform.position = (new Vector3 (j * TileOffset, i * TileOffset, 0));
-                        // TODO set station parameters in the gameobject
-                        station.GetComponent<Rail>().setConnections(railGrid[i, j].connections);
-                    }
-
-                    if (railGrid[i, j] is Rail)
-                    {
-                        GameObject rail = railSpawner.Spawn(gameObject);
-                        
-                        tileObjectGrid[i, j] = rail;
-                        
-                        rail.transform.position = (new Vector3 (j * TileOffset, i * TileOffset, 0));
-                        // TODO set rail parameters in the gameobject
-                        rail.GetComponent<Rail>().setConnections(railGrid[i, j].connections);
-                    }
-                    GameObject tileObject = tileSpawner.Spawn(gameObject);
-                    tileObjectGrid[i, j] = tileObject;
-                    
-                    tileObject.transform.position = (new Vector3 (j * TileOffset, i * TileOffset, 0));
-                }
-            }
-        }
-
+        return instance;
     }
 
     public void AddTrain(Vector2Int position)
@@ -152,20 +94,34 @@ public class GameEngine : MonoBehaviour
     {
         foreach (ISpawner spawner in spawners)
         {
+            if (spawner is StationSpawner) continue;
+            
             if (spawner is RailSpawner)
             { 
-                Destroy(tileObjectGrid[position.x, position.y]);
+                Destroy(railGrid[position.x, position.y].gameObject);
                 
                 GameObject rail = spawner.Spawn(gameObject);
             
-                tileObjectGrid[position.x, position.y] = rail;
+                railGrid[position.x, position.y] = rail.GetComponent<Rail>();
                 
-                rail.transform.position = new Vector3(position.x, position.y, 0);
+                rail.transform.position = new Vector3(position.x * TileOffset, position.y * TileOffset, 0);
                 
-                railGrid[position.x, position.y] = new Rail(connections);
+                rail.GetComponent<Rail>().setConnections(connections);
                 
             }
         }
+    }
+
+    public void TileToRail(Tile tile, Directions[] connections)
+    {
+        Vector2Int position = GetTilePosition(tile);
+
+        if (position == new Vector2Int(-1, -1))
+        {
+            return;
+        }
+        
+        AddRail(position, connections);
     }
 
     public void SetRailAttributes(Rail rail, bool occupied, Directions[] connections)
@@ -175,26 +131,69 @@ public class GameEngine : MonoBehaviour
 
     public void DeleteRail(Vector2Int position)
     {
-        railGrid[position.x, position.y] = new Tile();
-        Destroy(tileObjectGrid[position.x, position.y]);
+        Destroy(railGrid[position.x, position.y].gameObject);
 
         foreach (ISpawner spawner in spawners)
         {
+            if (spawner is RailSpawner) continue;
+            
             if (spawner is TileSpawner)
             {
                 GameObject tileObject = spawner.Spawn(gameObject);
                 
-                tileObjectGrid[position.x, position.y] = tileObject;
+                railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
+            }
+        }
+
+    }
+    
+    public void DeleteRail(Rail rail)
+    {
+        Vector2Int position = GetTilePosition(rail);
+
+        if (position == new Vector2Int(-1, -1))
+        {
+            return;
+        }
+        
+        Destroy(railGrid[position.x, position.y].gameObject);
+
+        foreach (ISpawner spawner in spawners)
+        {
+            if (spawner is RailSpawner) continue;
+            
+            if (spawner is TileSpawner)
+            {
+                GameObject tileObject = spawner.Spawn(gameObject);
+                
+                railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
             }
         }
 
     }
 
+    private Vector2Int GetTilePosition(Tile tile)
+    {
+        Vector2Int position = new Vector2Int( -1, -1 );
+        
+        for (int i = 0; i < GridHeight; i++)
+        {
+            for (int j = 0; j < GridWidth; j++)
+            {
+                if (ReferenceEquals(railGrid[i, j], tile))
+                {
+                    position = new Vector2Int(i, j);
+                }
+            }
+        }
+        
+        return position;
+    }
     private void SimulateOneTurn()
     {
         foreach (GameObject train in Trains)
         {
-            GetComponent<Train>().move();
+            train.GetComponent<Train>().move();
         }
     }
     

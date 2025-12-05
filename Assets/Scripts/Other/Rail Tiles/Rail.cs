@@ -49,4 +49,5 @@ public class Rail : Tile
             spriteRenderers[i].SetActive(connections[i]);
         }
     }
+    
 }
