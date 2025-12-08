@@ -39,8 +39,8 @@ public class GameEngine : MonoBehaviour
                 {
                     for (int j = 0; j < GridWidth; j++)
                     {
-                        railGrid[i, j] = tileSpawner?.Spawn(gameObject).GetComponent<Tile>();
-                        railGrid[i, j].transform.position = (new Vector3(j * TileOffset, i * TileOffset, 0));
+                        railGrid[j, i] = tileSpawner?.Spawn(gameObject).GetComponent<Tile>();
+                        railGrid[j, i].transform.position = (new Vector3(j * TileOffset, i * TileOffset, 0));
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class GameEngine : MonoBehaviour
         }
     }
 
-    public void AddRail(Vector2Int position, Directions[] connections)
+    public Rail AddRail(Vector2Int position, Directions[] connections)
     {
         foreach (ISpawner spawner in spawners)
         {
@@ -98,30 +98,32 @@ public class GameEngine : MonoBehaviour
             
             if (spawner is RailSpawner)
             { 
-                Destroy(railGrid[position.x, position.y].gameObject);
+                Destroy(railGrid[position.y, position.x].gameObject);
                 
                 GameObject rail = spawner.Spawn(gameObject);
             
-                railGrid[position.x, position.y] = rail.GetComponent<Rail>();
+                railGrid[position.y, position.x] = rail.GetComponent<Rail>();
                 
-                rail.transform.position = new Vector3(position.x * TileOffset, position.y * TileOffset, 0);
+                rail.transform.position = new Vector3(position.y * TileOffset, position.x * TileOffset, 0);
                 
                 rail.GetComponent<Rail>().setConnections(connections);
-                
+
+                return (Rail)railGrid[position.y, position.x];
             }
         }
+        return null;
     }
 
-    public void TileToRail(Tile tile, Directions[] connections)
+    public Rail TileToRail(Tile tile, Directions[] connections)
     {
         Vector2Int position = GetTilePosition(tile);
 
         if (position == new Vector2Int(-1, -1))
         {
-            return;
+            return null;
         }
         
-        AddRail(position, connections);
+        return AddRail(position, connections);
     }
 
     public void SetRailAttributes(Rail rail, bool occupied, Directions[] connections)
@@ -147,16 +149,16 @@ public class GameEngine : MonoBehaviour
 
     }
     
-    public void DeleteRail(Rail rail)
+    public Tile DeleteRail(Rail rail)
     {
         Vector2Int position = GetTilePosition(rail);
 
         if (position == new Vector2Int(-1, -1))
         {
-            return;
+            return null;
         }
         
-        Destroy(railGrid[position.x, position.y].gameObject);
+        Destroy(railGrid[position.y, position.x].gameObject);
 
         foreach (ISpawner spawner in spawners)
         {
@@ -167,9 +169,10 @@ public class GameEngine : MonoBehaviour
                 GameObject tileObject = spawner.Spawn(gameObject);
                 
                 railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
+                return  railGrid[position.x, position.y];
             }
         }
-
+        return  railGrid[position.x, position.y];
     }
 
     private Vector2Int GetTilePosition(Tile tile)
@@ -182,7 +185,7 @@ public class GameEngine : MonoBehaviour
             {
                 if (ReferenceEquals(railGrid[i, j], tile))
                 {
-                    position = new Vector2Int(i, j);
+                    position = new Vector2Int(j, i);
                 }
             }
         }

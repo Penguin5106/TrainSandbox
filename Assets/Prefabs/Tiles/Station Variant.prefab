@@ -62,13 +62,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4662033559055900164, guid: 28eefd2b23b63404e92f3e9d4ffe088b, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5316338841874343872, guid: 28eefd2b23b63404e92f3e9d4ffe088b, type: 3}
       propertyPath: m_Name
       value: Station Variant
       objectReference: {fileID: 0}
     - target: {fileID: 7594232845752061009, guid: 28eefd2b23b63404e92f3e9d4ffe088b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7626954315689603884, guid: 28eefd2b23b63404e92f3e9d4ffe088b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
