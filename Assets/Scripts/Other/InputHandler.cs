@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -40,7 +41,7 @@ public class InputHandler : MonoBehaviour
             
             newConnections[direction] = !newConnections[direction];
 
-            if (newConnections == new bool[] { false, false, false, false, false, false, false, false })
+            if (!newConnections.Contains(true))
             {
                 clickable = GameEngine.GetInstance().DeleteRail(rail);
                 return;
@@ -62,7 +63,26 @@ public class InputHandler : MonoBehaviour
     {
         if (clickable is Station station)
         {
-            station.name = stationName;
+            if (stationName != "")
+            {
+                station.name = stationName;
+                return;
+            }
+            
+            if (!station.connections.Contains(true))
+            {
+                clickable = GameEngine.GetInstance().DeleteRail(station);
+                return;
+            }
+
+            clickable = GameEngine.GetInstance().StationToRail(station);
+            return;
+        }
+
+        if (clickable is Rail rail)
+        {
+            clickable = GameEngine.GetInstance().RailToStation(rail,  stationName);
+            return;
         }
     }
 }

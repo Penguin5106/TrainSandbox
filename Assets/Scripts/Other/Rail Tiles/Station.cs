@@ -7,4 +7,9 @@ public class Station : Rail
     {
         this.name = name;
     }
+
+    public void SetName(string name)
+    {
+        this.name =  name;
+    }
 }

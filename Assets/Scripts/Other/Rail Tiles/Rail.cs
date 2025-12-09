@@ -39,11 +39,13 @@ public class Rail : Tile
 
     public void setConnections(bool[] connections)
     {
-        if (connections.Length == 8)
+        if (connections.Length != 8)
         {
-            this.connections = connections;
+            return;
         }
         
+        this.connections = connections;
+            
         for (int i = 0; i < 8; i++)
         {
             spriteRenderers[i].SetActive(connections[i]);

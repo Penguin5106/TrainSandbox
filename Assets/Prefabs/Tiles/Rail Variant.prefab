@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7612526725354431076
 Transform:
   m_ObjectHideFlags: 0
@@ -124,7 +124,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3891456050337566349
 Transform:
   m_ObjectHideFlags: 0
@@ -231,7 +231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2757782713683427171
 Transform:
   m_ObjectHideFlags: 0
@@ -338,7 +338,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2894434242625827846
 Transform:
   m_ObjectHideFlags: 0
@@ -445,7 +445,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1473788016065221141
 Transform:
   m_ObjectHideFlags: 0
@@ -552,7 +552,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5162851060210587650
 Transform:
   m_ObjectHideFlags: 0
@@ -659,7 +659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5346480988333073024
 Transform:
   m_ObjectHideFlags: 0
@@ -766,7 +766,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &842127198223292102
 Transform:
   m_ObjectHideFlags: 0
@@ -892,6 +892,10 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7150392543998068649, guid: 0be264b1e8c0c2e4e8fd9d7ee63265f2, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7605959693062078421, guid: 0be264b1e8c0c2e4e8fd9d7ee63265f2, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.24
@@ -1000,14 +1004,14 @@ MonoBehaviour:
   gridPosition: {x: 0, y: 0}
   isOccupied: 0
   spriteRenderers:
-  - {fileID: 2139633371250033056, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 7844662200364025612, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 3808705457768082568, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 6496879505634956495, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 8858555750919650672, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 8746398827046411922, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 3776124718608012277, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
-  - {fileID: 7932741000471999829, guid: 8e84613eae573724ab0fc0c7ec62405d, type: 3}
+  - {fileID: 4662033559055900164}
+  - {fileID: 3593460529700919464}
+  - {fileID: 7626954315689603884}
+  - {fileID: 516456658662525803}
+  - {fileID: 2876874785887560404}
+  - {fileID: 2621706868957544758}
+  - {fileID: 7594232845752061009}
+  - {fileID: 3681022046379928305}
 --- !u!4 &7933041370313520734 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7605959693062078421, guid: 0be264b1e8c0c2e4e8fd9d7ee63265f2, type: 3}

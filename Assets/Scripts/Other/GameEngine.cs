@@ -90,7 +90,31 @@ public class GameEngine : MonoBehaviour
         }
     }
 
-    public Rail AddRail(Vector2Int position, Directions[] connections)
+    private Rail AddRail(Vector2Int position, Directions[] connections)
+    {
+        foreach (ISpawner spawner in spawners)
+        {
+            if (spawner is StationSpawner) continue;
+            
+            if (spawner is RailSpawner)
+            { 
+                Destroy(railGrid[position.y, position.x].gameObject);
+                
+                GameObject rail = spawner.Spawn(gameObject);
+            
+                railGrid[position.y, position.x] = rail.GetComponent<Rail>();
+                
+                rail.transform.position = new Vector3(position.y * TileOffset, position.x * TileOffset, 0);
+                
+                rail.GetComponent<Rail>().setConnections(connections);
+
+                return (Rail)railGrid[position.y, position.x];
+            }
+        }
+        return null;
+    }
+    
+    private Rail AddRail(Vector2Int position, bool[] connections)
     {
         foreach (ISpawner spawner in spawners)
         {
@@ -125,13 +149,59 @@ public class GameEngine : MonoBehaviour
         
         return AddRail(position, connections);
     }
+    
+    public Station RailToStation(Rail rail, string name)
+    {
+        Vector2Int position = GetTilePosition(rail);
+
+        if (position == new Vector2Int(-1, -1))
+        {
+            return null;
+        }
+        
+        return AddStation(position, rail.connections, name);
+    }
+
+    private Station AddStation(Vector2Int position, bool[] connections, string s)
+    {
+        foreach (ISpawner spawner in spawners)
+        {
+            if (spawner is StationSpawner)
+            { 
+                Destroy(railGrid[position.y, position.x].gameObject);
+                
+                GameObject station = spawner.Spawn(gameObject);
+            
+                railGrid[position.y, position.x] = station.GetComponent<Station>();
+                
+                station.transform.position = new Vector3(position.y * TileOffset, position.x * TileOffset, 0);
+                
+                station.GetComponent<Rail>().setConnections(connections);
+                station.GetComponent<Station>().SetName(s);
+
+                return (Station)railGrid[position.y, position.x];
+            }
+        }
+        return null;
+    }
+
+    public Rail StationToRail(Station station)
+    {
+        Vector2Int position = GetTilePosition(station);
+        if (position == new Vector2Int(-1, -1))
+        {
+            return null;
+        }
+
+        return AddRail(position, station.connections);
+    }
 
     public void SetRailAttributes(Rail rail, bool occupied, Directions[] connections)
     {
 
     }
 
-    public void DeleteRail(Vector2Int position)
+    public Tile DeleteRail(Vector2Int position)
     {
         Destroy(railGrid[position.x, position.y].gameObject);
 
@@ -143,10 +213,11 @@ public class GameEngine : MonoBehaviour
             {
                 GameObject tileObject = spawner.Spawn(gameObject);
                 
-                railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
+                return railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
             }
         }
 
+        return null;
     }
     
     public Tile DeleteRail(Rail rail)
@@ -168,11 +239,13 @@ public class GameEngine : MonoBehaviour
             {
                 GameObject tileObject = spawner.Spawn(gameObject);
                 
-                railGrid[position.x, position.y] = tileObject.GetComponent<Tile>();
-                return  railGrid[position.x, position.y];
+                tileObject.transform.position = new Vector3(position.y * TileOffset, position.x * TileOffset, 0);
+                
+                railGrid[position.y, position.x] = tileObject.GetComponent<Tile>();
+                return  railGrid[position.y, position.x];
             }
         }
-        return  railGrid[position.x, position.y];
+        return  railGrid[position.y, position.x];
     }
 
     private Vector2Int GetTilePosition(Tile tile)
