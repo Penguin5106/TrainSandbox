@@ -12,4 +12,9 @@ public class Station : Rail
     {
         this.name =  name;
     }
+
+    public override void Click()
+    {
+        UIManager.GetInstance().SetUIPanelActive(UIPanel.Station);
+    }
 }

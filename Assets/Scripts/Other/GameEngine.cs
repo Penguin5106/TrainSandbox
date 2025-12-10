@@ -10,7 +10,7 @@ public class GameEngine : MonoBehaviour
     private const float TileOffset = 0.5f;
     
     public Tile[,] railGrid;
-    private List<GameObject> Trains;
+    private List<Train> Trains;
     
     //[SerializeField] private GameObject railPrefab;
     //[SerializeField] private GameObject trainPrefab;
@@ -24,7 +24,7 @@ public class GameEngine : MonoBehaviour
     {
         instance = this;
         
-        Trains = new List<GameObject>();
+        Trains = new List<Train>();
         railGrid = new Tile[GridHeight, GridWidth];
 
         foreach (Spawner spawner in spawners)
@@ -52,25 +52,56 @@ public class GameEngine : MonoBehaviour
         return instance;
     }
 
+    public static float GetTileOffset()
+    {
+        return TileOffset;
+    }
+
+    public void AddTrain(Tile tile)
+    {
+        Vector2Int position = GetTilePosition(tile);
+        
+        AddTrain(position);
+    }
+    
     public void AddTrain(Vector2Int position)
     {
+        if (!railGrid[position.y, position.x] is Rail)
+        {
+            return;
+        }
+
+        Rail rail = (Rail)railGrid[position.y, position.x];
+        if (rail.isOccupied)
+        {
+            return;
+        }
+        
         foreach (ISpawner spawner in spawners)
         {
             if (spawner is TrainSpawner)
             {
-                GameObject train = spawner.Spawn(gameObject);
-
-                train.GetComponent<Train>().setPosition(position);
+                GameObject trainObject = spawner.Spawn(gameObject);
+                
+                Train train = trainObject.GetComponent<Train>();
+                train.setPosition(position);
                 
                 Trains.Add(train);
                 
+                rail.isOccupied = true;
             }
         }
     }
 
-    public void DeleteTrain(GameObject train)
+    public void DeleteTrain(Train train)
     {
         Trains.Remove(train);
+
+        if (railGrid[train.GetPosition().y, train.GetPosition().x] is Rail rail)
+        {
+            rail.isOccupied = false;
+        }
+        
         Destroy(train);
     }
 
@@ -267,9 +298,9 @@ public class GameEngine : MonoBehaviour
     }
     private void SimulateOneTurn()
     {
-        foreach (GameObject train in Trains)
+        foreach (Train train in Trains)
         {
-            train.GetComponent<Train>().move();
+            train.move();
         }
     }
     

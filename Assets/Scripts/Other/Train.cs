@@ -6,8 +6,8 @@ using System.Linq;
 
 public class Train : MonoBehaviour , IClickable
 {
-    Vector2Int position;
-
+    private Vector2Int position;
+    private float TileOffset;
     private List<Station> timetable { get; set; }
 
     private List<Vector2Int> temporaryPath;
@@ -23,6 +23,7 @@ public class Train : MonoBehaviour , IClickable
 
     public Train()
     {
+        TileOffset = GameEngine.GetTileOffset();
         position = new Vector2Int(0, 0);
     }
 
@@ -34,13 +35,18 @@ public class Train : MonoBehaviour , IClickable
     public void setPosition(int xPos, int yPos)
     {
         position =  new Vector2Int(xPos, yPos);
-        gameObject.transform.position = new  Vector3(position.x, position.y, 0);
+        gameObject.transform.position = new  Vector3(position.y * TileOffset, position.x * TileOffset, -1);
     }
     
     public void setPosition(Vector2Int newPos)
     {
         position =  newPos;
-        gameObject.transform.position = new  Vector3(position.x, position.y, 0);
+        gameObject.transform.position = new  Vector3(position.y * TileOffset, position.x * TileOffset, -1);
+    }
+
+    public Vector2Int GetPosition()
+    {
+        return position;
     }
 
     public void move()

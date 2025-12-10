@@ -52,4 +52,8 @@ public class Rail : Tile
         }
     }
     
+    public override void Click()
+    {
+        UIManager.GetInstance().SetUIPanelActive(UIPanel.Rail);
+    }
 }

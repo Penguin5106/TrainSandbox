@@ -27,7 +27,7 @@ public class Tile : MonoBehaviour , IClickable
         return connections;
     }
     
-    public void Click()
+    public virtual void Click()
     {
         UIManager.GetInstance().SetUIPanelActive(UIPanel.Tile);
     }

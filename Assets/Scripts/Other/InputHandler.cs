@@ -21,8 +21,8 @@ public class InputHandler : MonoBehaviour
 
         if (hit)
         {
-            Debug.Log("hit object" + hit.collider.name);
             clickable = hit.collider.GetComponent<IClickable>() ?? clickable;
+            Debug.Log("clickable is " + clickable.GetType().Name);
             
             clickable?.Click();
             return;
@@ -31,6 +31,14 @@ public class InputHandler : MonoBehaviour
         UIManager.GetInstance().SetUIPanelActive(UIPanel.None);
         clickable = null;
         
+    }
+
+    public void SpawnTrainOnRail()
+    {
+        if (clickable is Rail rail)
+        {
+            GameEngine.GetInstance().AddTrain(rail);
+        }
     }
 
     public void ToggleRailConnection(int direction)

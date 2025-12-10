@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public enum UIPanel
@@ -11,7 +12,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject TrainInfoPanel;
     [SerializeField] private GameObject TileInfoPanel;
-
+    
+    [SerializeField] private GameObject TileNameText;
+    [SerializeField] private GameObject TileNameBox;
     
     private GameObject[] Panels;
 
@@ -42,8 +45,20 @@ public class UIManager : MonoBehaviour
         
         switch (panel)
         {
+            case UIPanel.Station:
+            {
+                TileInfoPanel.SetActive(true);
+                break;
+            }
+            case UIPanel.Rail:
+            {
+                TileNameText.GetComponent<TextMeshProUGUI>().SetText("");
+                TileInfoPanel.SetActive(true);
+                break;   
+            }
             case UIPanel.Tile:
             {
+                    TileNameText.GetComponent<TextMeshProUGUI>().SetText("");
                     TileInfoPanel.SetActive(true);
                 break;
             }
