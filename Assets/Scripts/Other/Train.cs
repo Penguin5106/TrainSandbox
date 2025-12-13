@@ -19,12 +19,15 @@ public class Train : MonoBehaviour , IClickable
     public Train(int xPos, int yPos)
     {
         position = new Vector2Int(xPos, yPos);
+        timetable = new List<Station>();
     }
 
     public Train()
     {
+        path = new List<Vector2Int>();
         TileOffset = GameEngine.GetTileOffset();
         position = new Vector2Int(0, 0);
+        timetable = new List<Station>();
     }
 
     public List<Station> GetTimetable()
@@ -62,9 +65,12 @@ public class Train : MonoBehaviour , IClickable
             setPosition(path[pathPosition]);
             return;
         }
-        temporaryPathPosition++;
 
         setPosition(temporaryPath[temporaryPathPosition]);
+        temporaryPathPosition++;
+        
+        if (temporaryPathPosition >= temporaryPath.Count)
+            temporaryPath.Clear();
     }
 
     double optimisedMagnitude(Vector2 vec)
@@ -477,12 +483,15 @@ public class Train : MonoBehaviour , IClickable
 
     private bool generatePath()
     {
+        path.Clear();
+
+        if (timetable.Count == 0)
+            return true;
+        
         Tile[,] grid = GameEngine.GetInstance().railGrid;
 
         Vector2Int pathfindStart = position;
         
-        path.Clear();
-
         int iteration = 0;
         
         foreach (Station station in timetable)
@@ -492,6 +501,7 @@ public class Train : MonoBehaviour , IClickable
             if (iteration == 0)
             {
                 temporaryPath = pathfind(grid, pathfindStart, pathfindGoal);
+                temporaryPathPosition = 0;
             }
             else
             {
@@ -506,18 +516,32 @@ public class Train : MonoBehaviour , IClickable
             iteration++;
             pathfindStart = pathfindGoal;
         }
+
+        pathPosition = 0;
         return true;
     }
 
     public bool SetNewTimetable(List<Station> stations)
     {
         timetable = stations;
+        UIManager.GetInstance().SetTrainInfo(timetable);
+        
+        return generatePath();
+    }
+
+    public bool AddStationToTimetable(Station station)
+    {
+        timetable.Add(station);
+        
+        UIManager.GetInstance().SetTrainInfo(timetable);
         
         return generatePath();
     }
 
     public void Click()
     {
-        UIManager.GetInstance().SetUIPanelActive(UIPanel.Train);
+        UIManager ui = UIManager.GetInstance();
+        ui.SetUIPanelActive(UIPanel.Train);
+        ui.SetTrainInfo(timetable);
     }
 }

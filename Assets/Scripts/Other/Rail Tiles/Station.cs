@@ -2,19 +2,26 @@ using UnityEngine;
 
 public class Station : Rail
 {
-    private string name { get; set; }
+    private string Stationname;
     public Station(Directions[] connections, string name) : base(connections)
     {
         this.name = name;
     }
 
-    public void SetName(string name)
+    public void SetName(string stationname)
     {
-        this.name =  name;
+        this.Stationname =  stationname;
+    }
+
+    public string GetName()
+    {
+        return Stationname;
     }
 
     public override void Click()
     {
-        UIManager.GetInstance().SetUIPanelActive(UIPanel.Station);
+        UIManager uiManager = UIManager.GetInstance();
+        uiManager.SetUIPanelActive(UIPanel.Station);
+        uiManager.SetStationText(Stationname);
     }
 }

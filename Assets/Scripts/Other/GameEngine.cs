@@ -12,9 +12,7 @@ public class GameEngine : MonoBehaviour
     public Tile[,] railGrid;
     private List<Train> Trains;
     
-    //[SerializeField] private GameObject railPrefab;
-    //[SerializeField] private GameObject trainPrefab;
-    //[SerializeField] private GameObject tilePrefab;
+    private List<Station> Stations;
 
     [SerializeField] private List<Spawner> spawners;
 
@@ -26,6 +24,7 @@ public class GameEngine : MonoBehaviour
         
         Trains = new List<Train>();
         railGrid = new Tile[GridHeight, GridWidth];
+        Stations = new List<Station>();
 
         foreach (Spawner spawner in spawners)
         {
@@ -55,6 +54,26 @@ public class GameEngine : MonoBehaviour
     public static float GetTileOffset()
     {
         return TileOffset;
+    }
+
+    public List<Station> GetStations()
+    {
+        return Stations;
+    }
+
+    public Station GetStationByName(string stationName)
+    {
+        foreach (Station station in Stations)
+        {
+            Debug.Log(station.GetName());
+            Debug.Log(stationName);
+            
+            if (station.GetName() ==  stationName)
+                return station;
+        }
+        
+        Debug.Log("no station found");
+        return null;
     }
 
     public void AddTrain(Tile tile)
@@ -103,12 +122,6 @@ public class GameEngine : MonoBehaviour
         }
         
         Destroy(train);
-    }
-
-    public void DisplayTrainTimetable(Train train)
-    {
-        train.GetTimetable();
-        // TODO display the timetable retrieved above
     }
 
     public void SetTrainTimetable(Train train, List<Station> stations)
@@ -210,6 +223,8 @@ public class GameEngine : MonoBehaviour
                 station.GetComponent<Rail>().setConnections(connections);
                 station.GetComponent<Station>().SetName(s);
 
+                Stations.Add((Station)railGrid[position.y, position.x]);
+
                 return (Station)railGrid[position.y, position.x];
             }
         }
@@ -224,6 +239,8 @@ public class GameEngine : MonoBehaviour
             return null;
         }
 
+        Stations.Remove(station);
+
         return AddRail(position, station.connections);
     }
 
@@ -234,6 +251,11 @@ public class GameEngine : MonoBehaviour
 
     public Tile DeleteRail(Vector2Int position)
     {
+        if (railGrid[position.x, position.y] is Station station)
+        {
+            Stations.Remove(station);
+        }
+
         Destroy(railGrid[position.x, position.y].gameObject);
 
         foreach (ISpawner spawner in spawners)
@@ -259,7 +281,12 @@ public class GameEngine : MonoBehaviour
         {
             return null;
         }
-        
+
+        if (railGrid[position.x, position.y] is Station station)
+        {
+            Stations.Remove(station);
+        }
+
         Destroy(railGrid[position.y, position.x].gameObject);
 
         foreach (ISpawner spawner in spawners)
