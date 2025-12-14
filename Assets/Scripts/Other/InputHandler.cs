@@ -32,8 +32,11 @@ public class InputHandler : MonoBehaviour
 
         if (hit)
         {
+            if (hit.collider.gameObject.GetComponent<IClickable>() == null)
+                return;
+            
+            
             clickable = hit.collider.GetComponent<IClickable>() ?? clickable;
-            Debug.Log("clickable is " + clickable.GetType().Name);
             
             clickable?.Click();
             return;
@@ -72,7 +75,6 @@ public class InputHandler : MonoBehaviour
 
         if (clickable is Tile tile)
         {
-            Debug.Log(direction);
             clickable = GameEngine.GetInstance().TileToRail(tile, new Directions[]{(Directions)direction});
         }
         
@@ -118,6 +120,17 @@ public class InputHandler : MonoBehaviour
         if (clickable is Train train)
         {
             train.AddStationToTimetable(GameEngine.GetInstance().GetStationByName(stationName));
+            
+            
+
+            string log = "";
+        
+            foreach (Vector2Int pos in train.path)
+            {
+                log += pos.x + pos.y + ", ";
+            }
+        
+            Debug.Log(log);
         }
     }
 }

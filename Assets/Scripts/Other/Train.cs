@@ -10,14 +10,16 @@ public class Train : MonoBehaviour , IClickable
     private float TileOffset;
     private List<Station> timetable { get; set; }
 
-    private List<Vector2Int> temporaryPath;
-    private List<Vector2Int> path;
+    public List<Vector2Int> temporaryPath;
+    public List<Vector2Int> path;
 
-    private int temporaryPathPosition;
-    private int pathPosition;
+    private int temporaryPathPosition = 0;
+    private int pathPosition = 0;
 
     public Train(int xPos, int yPos)
     {
+        path = new List<Vector2Int>();
+        TileOffset = GameEngine.GetTileOffset();
         position = new Vector2Int(xPos, yPos);
         timetable = new List<Station>();
     }
@@ -30,6 +32,12 @@ public class Train : MonoBehaviour , IClickable
         timetable = new List<Station>();
     }
 
+    public void Start()
+    {
+        temporaryPath = new List<Vector2Int>();
+        
+    }
+    
     public List<Station> GetTimetable()
     {
         return timetable;
@@ -341,12 +349,14 @@ public class Train : MonoBehaviour , IClickable
             if (openSet.Count == 0 )
             {
                 // unpathable TODO define error behaviour
-
+                Debug.Log("path cannot be found");
                 return null;
             }
 
             
         }
+        
+        shortestPath.Add(ClosestPoint);
         
         //walkback to find path
         while (shortestPath[^1] != start)
@@ -500,12 +510,12 @@ public class Train : MonoBehaviour , IClickable
 
             if (iteration == 0)
             {
-                temporaryPath = pathfind(grid, pathfindStart, pathfindGoal);
+                temporaryPath = pathfind(grid, pathfindStart, pathfindGoal) ?? new List<Vector2Int>();
                 temporaryPathPosition = 0;
             }
             else
             {
-                path.Concat(pathfind(grid, pathfindStart, pathfindGoal) ?? new List<Vector2Int>());
+                path.Concat(pathfind(grid, pathfindStart, pathfindGoal));
 
                 if (path.Count == 0)
                 {

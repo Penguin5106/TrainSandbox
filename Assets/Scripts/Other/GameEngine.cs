@@ -65,9 +65,6 @@ public class GameEngine : MonoBehaviour
     {
         foreach (Station station in Stations)
         {
-            Debug.Log(station.GetName());
-            Debug.Log(stationName);
-            
             if (station.GetName() ==  stationName)
                 return station;
         }
@@ -323,7 +320,7 @@ public class GameEngine : MonoBehaviour
         
         return position;
     }
-    private void SimulateOneTurn()
+    public void SimulateOneTurn()
     {
         foreach (Train train in Trains)
         {
