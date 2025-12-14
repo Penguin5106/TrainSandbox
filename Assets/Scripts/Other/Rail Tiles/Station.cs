@@ -3,6 +3,9 @@ using UnityEngine;
 public class Station : Rail
 {
     private string Stationname;
+    
+    public Vector2Int gridPosition;
+    
     public Station(Directions[] connections, string name) : base(connections)
     {
         this.name = name;

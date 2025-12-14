@@ -99,7 +99,7 @@ public class Train : MonoBehaviour , IClickable
         
         
     }
-
+    
     private List<Vector2Int> pathfind(Tile[,] railGrid, Vector2Int start, Vector2Int goal)
     {
         // TODO write error handling for if start and goal are not rail or station and if they are unpathable
@@ -121,201 +121,46 @@ public class Train : MonoBehaviour , IClickable
             
             // gather connections to (optimistic) closest point
             int connectionsIndex = 0;
-            while (connectionsIndex < railGrid[ClosestPoint[0], ClosestPoint[1]].connections.Length)
+            while (connectionsIndex < railGrid[ClosestPoint.y, ClosestPoint.x].connections.Length)
             {
-                if (railGrid[ClosestPoint[0], ClosestPoint[1]].connections[connectionsIndex])
+                if (railGrid[ClosestPoint.y, ClosestPoint.x].connections[connectionsIndex])
                 {
                     // if the 2 rail pieces are connected update the new ones stats for both path cost and if necessary the heuristic
-                    switch(connectionsIndex)
+                    
+                    Vector2Int vectorDirection = Vector2Int.zero;
+                    // set up/down
+                    if (connectionsIndex <= 2)
+                        vectorDirection.y = 1;
+        
+                    if (connectionsIndex >= 5)
+                        vectorDirection.y = -1;
+        
+                    // set left/right
+                    if (connectionsIndex == 2 || connectionsIndex == 4 || connectionsIndex == 7)
+                        vectorDirection.x = 1;
+        
+                    if (connectionsIndex == 0 || connectionsIndex == 3 || connectionsIndex == 5)
+                        vectorDirection.x = -1;
+        
+                    Vector2Int nextTile = ClosestPoint +  vectorDirection;
+        
+                    if (0 < nextTile.x && nextTile.x < railGrid.GetLength(1) && 
+                        railGrid.GetLength(0) > nextTile.y && nextTile.y > 0 && 
+                        railGrid[nextTile.y, nextTile.x].connections[7 - connectionsIndex])
                     {
-                        case (int)Directions.Up:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x].connections[(int)Directions.Down])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
+                        float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
                                 
-                                if (newLength < pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].x)
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].x = newLength;
+                        if (newLength < pathfindStats[nextTile.y, nextTile.x].x)
+                        {
+                            pathfindStats[nextTile.y, nextTile.x].x = newLength;
                                     
-                                    openSet.Add(new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x));
-                                }
+                            openSet.Add(new Vector2Int(nextTile.y, nextTile.x));
+                        }
 
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x));
-                                }
-                                /*pathfindStats[ClosestPoint.y + 1, ClosestPoint.x] = generateNewStats(
-                                    new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x), goal,
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x],
-                                    pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
-                                */
-                            }
-
-                            break;
-
-                        case (int)Directions.Down:
-
-                            if (ClosestPoint[0] - 1 > 0 && railGrid[ClosestPoint.y - 1, ClosestPoint.x].connections[(int)Directions.Up])
-                            { 
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].x)
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x));
-                                }
-                                
-                            }
-
-                            break;
-                        
-                        case (int)Directions.Left:
-
-                            if (ClosestPoint[1] - 1 > 0 && railGrid[ClosestPoint.y, ClosestPoint.x - 1].connections[(int)Directions.Right])
-                            { 
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y, ClosestPoint.x - 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y, ClosestPoint.x - 1));
-                                } 
-                            }
-
-                            break;
-                        
-                        case (int)Directions.Right:
-
-                            if (ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y, ClosestPoint.x + 1].connections[(int)Directions.Left])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y, ClosestPoint.x + 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y, ClosestPoint.x + 1));
-                                } 
-                            }
-
-                            break;
-
-                        case (int)Directions.UpLeft:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) && ClosestPoint[1] - 1 > 0 &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x - 1].connections[(int)Directions.DownRight])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1.4f);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x - 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x - 1));
-                                }
-                            }
-                            
-                            break;
-                        case (int)Directions.UpRight:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) &&
-                                ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x + 1].connections[(int)Directions.DownLeft])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1.4f);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x + 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x + 1));
-                                }
-                            }
-
-                            break;
-                        case (int)Directions.DownLeft:
-
-                            if (ClosestPoint[0] - 1 > 0 && ClosestPoint[1] - 1 > 0 &&
-                                railGrid[ClosestPoint.y - 1, ClosestPoint.x - 1].connections[(int)Directions.UpRight])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1.4f);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x - 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x - 1));
-                                }
-                            }
-                            
-                            break;
-                        case (int)Directions.DownRight:
-
-                            if (ClosestPoint[0] - 1 > 0 && ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y - 1, ClosestPoint.x + 1].connections[(int)Directions.UpLeft])
-                            {
-                                float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1.4f);
-                                
-                                if (newLength < pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].x)
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].x = newLength;
-                                    
-                                    openSet.Add(new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x + 1));
-                                }
-
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].y.Equals(0))
-                                {
-                                    pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].y =
-                                        (float)optimisedMagnitude(goal - new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x + 1));
-                                }
-                            }
-                            
-                            break;
-                        default:
-                            // if you get here something went wrong
-                            break;
+                        if (pathfindStats[nextTile.y, nextTile.x].y.Equals(0))
+                        {
+                            pathfindStats[nextTile.y, nextTile.x].y = (float)optimisedMagnitude(goal - nextTile);
+                        }
                     }
                     
                 }
@@ -350,7 +195,7 @@ public class Train : MonoBehaviour , IClickable
             {
                 // unpathable TODO define error behaviour
                 Debug.Log("path cannot be found");
-                return null;
+                return new List<Vector2Int>();
             }
 
             
@@ -362,127 +207,44 @@ public class Train : MonoBehaviour , IClickable
         while (shortestPath[^1] != start)
         {
             float shortestDistance = pathfindStats[ClosestPoint.y, ClosestPoint.x].x;
+            
             Vector2Int nextPathStep = ClosestPoint;
+            
             int connectionIndex = 0;
+            
             while (connectionIndex < railGrid[ClosestPoint[0], ClosestPoint[1]].connections.Length)
             {
                 if (railGrid[ClosestPoint[0], ClosestPoint[1]].connections[connectionIndex])
                 {
-                    switch(connectionIndex)
+                    Vector2Int vectorDirection = Vector2Int.zero;
+                    // set up/down
+                    if (connectionIndex <= 2)
+                        vectorDirection.y = 1;
+        
+                    if (connectionIndex >= 5)
+                        vectorDirection.y = -1;
+        
+                    // set left/right
+                    if (connectionIndex == 2 || connectionIndex == 4 || connectionIndex == 7)
+                        vectorDirection.x = 1;
+        
+                    if (connectionIndex == 0 || connectionIndex == 3 || connectionIndex == 5)
+                        vectorDirection.x = -1;
+        
+                    Vector2Int nextTile = ClosestPoint +  vectorDirection;
+        
+                    if (0 < nextTile.x && nextTile.x < railGrid.GetLength(1) && 
+                        railGrid.GetLength(0) > nextTile.y && nextTile.y > 0 && 
+                        railGrid[nextTile.y, nextTile.x].connections[7 - connectionIndex] && !pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].y.Equals(0))
                     {
-                        case (int)Directions.Up:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x].connections[(int)Directions.Down] && !pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x);
-                                }
-                            }
-
-                            break;
-
-                        case (int)Directions.Down:
-
-                            if (ClosestPoint[0] - 1 > 0 && railGrid[ClosestPoint.y - 1, ClosestPoint.x].connections[(int)Directions.Up] && !pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].y.Equals(0))
-                            { 
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y - 1, ClosestPoint.x].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x);
-                                }
-                            }
-
-                            break;
-                        
-                        case (int)Directions.Left:
-
-                            if (ClosestPoint[1] - 1 > 0 && railGrid[ClosestPoint.y, ClosestPoint.x - 1].connections[(int)Directions.Right] && !pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].y.Equals(0))
-                            { 
-                                if (pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y, ClosestPoint.x - 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y, ClosestPoint.x - 1);
-                                }
-                            }
-
-                            break;
-                        
-                        case (int)Directions.Right:
-
-                            if (ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y, ClosestPoint.x + 1].connections[(int)Directions.Left] && !pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y, ClosestPoint.x + 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y, ClosestPoint.x + 1);
-                                }
-                            }
-
-                            break;
-
-                        case (int)Directions.UpLeft:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) && ClosestPoint[1] - 1 > 0 &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x - 1].connections[(int)Directions.DownRight] && !pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y + 1, ClosestPoint.x - 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x - 1);
-                                }
-                            }
-                            
-                            break;
-                        case (int)Directions.UpRight:
-
-                            if (ClosestPoint[0] + 1 < railGrid.GetLength(0) &&
-                                ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y + 1, ClosestPoint.x + 1].connections[(int)Directions.DownLeft] && !pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y + 1, ClosestPoint.x + 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y + 1, ClosestPoint.x + 1);
-                                }
-                            }
-
-                            break;
-                        case (int)Directions.DownLeft:
-
-                            if (ClosestPoint[0] - 1 > 0 && ClosestPoint[1] - 1 > 0 &&
-                                railGrid[ClosestPoint.y - 1, ClosestPoint.x - 1].connections[(int)Directions.UpRight] && !pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y - 1, ClosestPoint.x - 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x - 1);
-                                } 
-                            }
-                            
-                            break;
-                        case (int)Directions.DownRight:
-
-                            if (ClosestPoint[0] - 1 > 0 && ClosestPoint[1] + 1 < railGrid.GetLength(1) &&
-                                railGrid[ClosestPoint.y - 1, ClosestPoint.x + 1].connections[(int)Directions.UpLeft] && !pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].y.Equals(0))
-                            {
-                                if (pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].x < shortestDistance)
-                                {
-                                    shortestDistance = pathfindStats[ClosestPoint.y - 1, ClosestPoint.x + 1].x;
-                                    nextPathStep = new Vector2Int(ClosestPoint.y - 1, ClosestPoint.x + 1);
-                                } 
-                            }
-                            
-                            break;
-                        default:
-                            // if you get here something went wrong
-                            break;
+                        if (pathfindStats[nextTile.y, nextTile.x].x < shortestDistance)
+                        {
+                            shortestDistance = pathfindStats[nextTile.y, nextTile.x].x;
+                            nextPathStep = nextTile;
+                        }
                     }
+                    
                 }
-
                 connectionIndex++;
             }
             shortestPath.Add(nextPathStep);
@@ -515,7 +277,7 @@ public class Train : MonoBehaviour , IClickable
             }
             else
             {
-                path.Concat(pathfind(grid, pathfindStart, pathfindGoal));
+                path = new List<Vector2Int>(path.Concat(new List<Vector2Int>(pathfind(grid, pathfindStart, pathfindGoal))));
 
                 if (path.Count == 0)
                 {

@@ -219,6 +219,7 @@ public class GameEngine : MonoBehaviour
                 
                 station.GetComponent<Rail>().setConnections(connections);
                 station.GetComponent<Station>().SetName(s);
+                station.GetComponent<Station>().gridPosition = position;
 
                 Stations.Add((Station)railGrid[position.y, position.x]);
 

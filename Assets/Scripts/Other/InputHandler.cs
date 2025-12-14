@@ -125,7 +125,7 @@ public class InputHandler : MonoBehaviour
 
             string log = "";
         
-            foreach (Vector2Int pos in train.path)
+            foreach (Vector2Int pos in train.temporaryPath)
             {
                 log += pos.x + pos.y + ", ";
             }

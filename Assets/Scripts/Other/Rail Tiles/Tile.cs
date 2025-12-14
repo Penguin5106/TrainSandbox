@@ -10,7 +10,6 @@ public class Tile : MonoBehaviour , IClickable
 {
     protected internal bool[] connections;
     
-    public Vector2Int gridPosition;
 
     public Tile()
     {
