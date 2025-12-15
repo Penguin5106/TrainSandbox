@@ -107,10 +107,11 @@ public class Train : MonoBehaviour , IClickable
         List<Vector2Int> shortestPath = new List<Vector2Int>();
 
         Vector2[,] pathfindStats = new Vector2[railGrid.GetLength(0), railGrid.GetLength(1)];
-
+        
+        for (int i=0;i<railGrid.GetLength(0)*railGrid.GetLength(1);i++) pathfindStats[i%railGrid.GetLength(0),i/railGrid.GetLength(0)]= new Vector2(-1, 0);
         //implement A* algorithm here
 
-        pathfindStats[start[0], start[1]] = new Vector2(0, (float)optimisedMagnitude(start - goal));
+        pathfindStats[start.y, start.x] = new Vector2(0, (float)optimisedMagnitude(start - goal));
 
         bool pathFound = false;
         Vector2Int ClosestPoint = start;
@@ -130,17 +131,22 @@ public class Train : MonoBehaviour , IClickable
                     Vector2Int vectorDirection = Vector2Int.zero;
                     // set up/down
                     if (connectionsIndex <= 2)
-                        vectorDirection.y = 1;
+                        vectorDirection.x = 1;
         
                     if (connectionsIndex >= 5)
-                        vectorDirection.y = -1;
+                        vectorDirection.x = -1;
         
                     // set left/right
                     if (connectionsIndex == 2 || connectionsIndex == 4 || connectionsIndex == 7)
-                        vectorDirection.x = 1;
+                        vectorDirection.y = 1;
         
                     if (connectionsIndex == 0 || connectionsIndex == 3 || connectionsIndex == 5)
-                        vectorDirection.x = -1;
+                        vectorDirection.y = -1;
+
+                    float distance = 1;
+                    
+                    if (MathF.Abs(vectorDirection.x) + MathF.Abs(vectorDirection.y) == 2)
+                        distance = 1.4f;
         
                     Vector2Int nextTile = ClosestPoint +  vectorDirection;
         
@@ -148,13 +154,13 @@ public class Train : MonoBehaviour , IClickable
                         railGrid.GetLength(0) > nextTile.y && nextTile.y > 0 && 
                         railGrid[nextTile.y, nextTile.x].connections[7 - connectionsIndex])
                     {
-                        float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], 1);
+                        float newLength = generatePathLength(pathfindStats[ClosestPoint.y, ClosestPoint.x], distance);
                                 
-                        if (newLength < pathfindStats[nextTile.y, nextTile.x].x)
+                        if (pathfindStats[nextTile.y, nextTile.x].x == -1 || newLength < pathfindStats[nextTile.y, nextTile.x].x)
                         {
                             pathfindStats[nextTile.y, nextTile.x].x = newLength;
                                     
-                            openSet.Add(new Vector2Int(nextTile.y, nextTile.x));
+                            openSet.Add(new Vector2Int(nextTile.x, nextTile.y));
                         }
 
                         if (pathfindStats[nextTile.y, nextTile.x].y.Equals(0))
@@ -173,14 +179,14 @@ public class Train : MonoBehaviour , IClickable
             if (openSet.Count != 0)
             {
                 Vector2 ClosestPointStats = new Vector2(9999, 9999);
-                foreach (Vector2Int Node in openSet)
+                foreach (Vector2Int node in openSet)
                 {
 
-                    if (pathfindStats[Node.y, Node.x].x + pathfindStats[Node.y, Node.x].y < ClosestPointStats.x + ClosestPointStats.y || 
-                        (pathfindStats[Node.y, Node.x].x + pathfindStats[Node.y, Node.x].y == ClosestPointStats.x + ClosestPointStats.y &&  pathfindStats[Node.y, Node.x].y < ClosestPointStats.y))
+                    if (pathfindStats[node.y, node.x].x + pathfindStats[node.y, node.x].y < ClosestPointStats.x + ClosestPointStats.y || 
+                        (pathfindStats[node.y, node.x].x + pathfindStats[node.y, node.x].y == ClosestPointStats.x + ClosestPointStats.y &&  pathfindStats[node.y, node.x].y <= ClosestPointStats.y))
                     {
-                        ClosestPoint = Node;
-                        ClosestPointStats = pathfindStats[Node.y, Node.x];
+                        ClosestPoint = node;
+                        ClosestPointStats = pathfindStats[node.y, node.x];
                     }
                             
                 }
@@ -212,30 +218,30 @@ public class Train : MonoBehaviour , IClickable
             
             int connectionIndex = 0;
             
-            while (connectionIndex < railGrid[ClosestPoint[0], ClosestPoint[1]].connections.Length)
+            while (connectionIndex < railGrid[ClosestPoint.y, ClosestPoint.x].connections.Length)
             {
-                if (railGrid[ClosestPoint[0], ClosestPoint[1]].connections[connectionIndex])
+                if (railGrid[ClosestPoint.y, ClosestPoint.x].connections[connectionIndex])
                 {
                     Vector2Int vectorDirection = Vector2Int.zero;
                     // set up/down
                     if (connectionIndex <= 2)
-                        vectorDirection.y = 1;
+                        vectorDirection.x = 1;
         
                     if (connectionIndex >= 5)
-                        vectorDirection.y = -1;
+                        vectorDirection.x = -1;
         
                     // set left/right
                     if (connectionIndex == 2 || connectionIndex == 4 || connectionIndex == 7)
-                        vectorDirection.x = 1;
+                        vectorDirection.y = 1;
         
                     if (connectionIndex == 0 || connectionIndex == 3 || connectionIndex == 5)
-                        vectorDirection.x = -1;
+                        vectorDirection.y = -1;
         
                     Vector2Int nextTile = ClosestPoint +  vectorDirection;
         
                     if (0 < nextTile.x && nextTile.x < railGrid.GetLength(1) && 
                         railGrid.GetLength(0) > nextTile.y && nextTile.y > 0 && 
-                        railGrid[nextTile.y, nextTile.x].connections[7 - connectionIndex] && !pathfindStats[ClosestPoint.y + 1, ClosestPoint.x].y.Equals(0))
+                        railGrid[nextTile.y, nextTile.x].connections[7 - connectionIndex] && !pathfindStats[nextTile.y, nextTile.x].y.Equals(0))
                     {
                         if (pathfindStats[nextTile.y, nextTile.x].x < shortestDistance)
                         {
@@ -250,6 +256,9 @@ public class Train : MonoBehaviour , IClickable
             shortestPath.Add(nextPathStep);
             ClosestPoint = nextPathStep;
         }
+
+        shortestPath.Reverse();
+        
         return shortestPath;
     }
 
