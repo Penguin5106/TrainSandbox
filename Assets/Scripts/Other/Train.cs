@@ -10,8 +10,8 @@ public class Train : MonoBehaviour , IClickable
     private float TileOffset;
     private List<Station> timetable { get; set; }
 
-    public List<Vector2Int> temporaryPath;
-    public List<Vector2Int> path;
+    private List<Vector2Int> temporaryPath;
+    private List<Vector2Int> path;
 
     private int temporaryPathPosition = 0;
     private int pathPosition = 0;
@@ -70,6 +70,9 @@ public class Train : MonoBehaviour , IClickable
             }
             pathPosition++;
 
+            if (pathPosition >= path.Count)
+                pathPosition = 0;
+            
             setPosition(path[pathPosition]);
             return;
         }
@@ -143,7 +146,7 @@ public class Train : MonoBehaviour , IClickable
                     if (connectionsIndex == 0 || connectionsIndex == 3 || connectionsIndex == 5)
                         vectorDirection.y = -1;
 
-                    float distance = 1;
+                    float distance = 2f;
                     
                     if (MathF.Abs(vectorDirection.x) + MathF.Abs(vectorDirection.y) == 2)
                         distance = 1.4f;
@@ -296,6 +299,14 @@ public class Train : MonoBehaviour , IClickable
             
             iteration++;
             pathfindStart = pathfindGoal;
+        }
+        
+        if (timetable.Count != 1)
+            path = new List<Vector2Int>(path.Concat(new List<Vector2Int>(pathfind(grid, pathfindStart, timetable[0].gridPosition))));
+
+        if (path.Count == 0)
+        {
+            return false;
         }
 
         pathPosition = 0;

@@ -120,17 +120,6 @@ public class InputHandler : MonoBehaviour
         if (clickable is Train train)
         {
             train.AddStationToTimetable(GameEngine.GetInstance().GetStationByName(stationName));
-            
-            
-
-            string log = "";
-        
-            foreach (Vector2Int pos in train.temporaryPath)
-            {
-                log += pos.x + pos.y + ", ";
-            }
-        
-            Debug.Log(log);
         }
     }
 }

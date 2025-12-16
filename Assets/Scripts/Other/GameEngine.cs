@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -16,6 +18,8 @@ public class GameEngine : MonoBehaviour
 
     [SerializeField] private List<Spawner> spawners;
 
+    private bool isSimulating = false;
+    private float simulationTime = 0;
     
 
     private void Start()
@@ -44,6 +48,21 @@ public class GameEngine : MonoBehaviour
                 }
             }
         }
+        
+    }
+
+    private void Update()
+    {
+        if (isSimulating)
+        {
+            simulationTime += Time.deltaTime;
+            if (simulationTime >= 1)
+            {
+                SimulateOneTurn();
+                simulationTime = 0;
+            }
+        }
+            
     }
 
     public static GameEngine GetInstance()
@@ -329,4 +348,18 @@ public class GameEngine : MonoBehaviour
         }
     }
     
+    public void SetIsSimulting(bool simulate)
+    {
+        isSimulating = simulate;
+    }
+
+    public bool GetIsSimulating()
+    {
+        return isSimulating;
+    }
+    
+    public void ToggleSimulationLoop()
+    {
+        isSimulating = !isSimulating;
+    }
 }
