@@ -2,15 +2,10 @@ using UnityEngine;
 
 public class Rail : Tile
 {
-
-    public bool isOccupied;
-
     [SerializeField] private GameObject[] spriteRenderers;
 
     public Rail(Directions[] connections)
     {
-        isOccupied = false;
-
         setConnections(connections);
     }
 

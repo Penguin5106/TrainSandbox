@@ -3,9 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class Train : MonoBehaviour , IClickable
 {
+    private Vector2Int prevPosition;
     private Vector2Int position;
     private float TileOffset;
     private List<Station> timetable { get; set; }
@@ -45,12 +47,14 @@ public class Train : MonoBehaviour , IClickable
 
     public void setPosition(int xPos, int yPos)
     {
+        prevPosition = position;
         position =  new Vector2Int(xPos, yPos);
         gameObject.transform.position = new  Vector3(position.y * TileOffset, position.x * TileOffset, -1);
     }
     
     public void setPosition(Vector2Int newPos)
     {
+        prevPosition = position;
         position =  newPos;
         gameObject.transform.position = new  Vector3(position.y * TileOffset, position.x * TileOffset, -1);
     }
@@ -58,6 +62,11 @@ public class Train : MonoBehaviour , IClickable
     public Vector2Int GetPosition()
     {
         return position;
+    }
+
+    public Vector2Int GetPreviousPosition()
+    {
+        return prevPosition;
     }
 
     public void move()

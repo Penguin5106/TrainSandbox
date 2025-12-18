@@ -99,7 +99,7 @@ public class GameEngine : MonoBehaviour
         AddTrain(position);
     }
     
-    public void AddTrain(Vector2Int position)
+    private void AddTrain(Vector2Int position)
     {
         if (!railGrid[position.y, position.x] is Rail)
         {
@@ -107,10 +107,7 @@ public class GameEngine : MonoBehaviour
         }
 
         Rail rail = (Rail)railGrid[position.y, position.x];
-        if (rail.isOccupied)
-        {
-            return;
-        }
+        
         
         foreach (ISpawner spawner in spawners)
         {
@@ -123,21 +120,23 @@ public class GameEngine : MonoBehaviour
                 
                 Trains.Add(train);
                 
-                rail.isOccupied = true;
             }
         }
     }
 
-    public void DeleteTrain(Train train)
+    private void DeleteTrain(Train train)
     {
         Trains.Remove(train);
-
-        if (railGrid[train.GetPosition().y, train.GetPosition().x] is Rail rail)
-        {
-            rail.isOccupied = false;
-        }
         
-        Destroy(train);
+        Destroy(train.gameObject);
+    }
+
+    private void DeleteTrains(IEnumerable<Train> trains)
+    {
+        foreach (Train train in trains)
+        {
+            DeleteTrain(train);
+        }
     }
 
     public void SetTrainTimetable(Train train, List<Station> stations)
@@ -346,6 +345,30 @@ public class GameEngine : MonoBehaviour
         {
             train.move();
         }
+
+        HashSet<Train> trainsToDestroy = new HashSet<Train>();
+        
+        for (int i = 0; i<Trains.Count; i++)
+        {
+            for (int j = i + 1; j < Trains.Count; j++)
+            {
+                HashSet<Vector2Int> Positions = new HashSet<Vector2Int>();
+                
+                Positions.Add(Trains[i].GetPosition());
+                Positions.Add(Trains[j].GetPosition());
+                Positions.Add(Trains[i].GetPreviousPosition());
+                Positions.Add(Trains[j].GetPreviousPosition());
+
+                if (Positions.Count < 4)
+                {
+                    trainsToDestroy.Add(Trains[i]);
+                    trainsToDestroy.Add(Trains[j]);
+                }
+            }
+        }
+
+        DeleteTrains(trainsToDestroy);
+        
     }
     
     public void SetIsSimulting(bool simulate)
